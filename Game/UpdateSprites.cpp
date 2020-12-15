@@ -29,6 +29,7 @@ void Game::updateSprites()
         std::vector<std::list<Sprite>::iterator> itVec; // Contains iterators pointing to Sprites to be deleted
         for (auto it = spriteListBuffer.begin(); it != spriteListBuffer.end(); ++it)
         {
+
             if ( (it)->updatePending())
             {
                 if ( (it)->needToWait()  ) (it)->decWait();
