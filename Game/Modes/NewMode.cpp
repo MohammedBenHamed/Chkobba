@@ -22,11 +22,6 @@ void NewMode::run()
         cm::moveCardToHome(Card(Card::DIAMONDS,3),cm::DECK,cm::HMNHAND,spriteListBuffer,cVecArr);
         done2 = true;
     }
-    if (done && done2 && !done3 && !cm::cardUpdating(Card(Card::DIAMONDS,3),cm::HMNHAND,spriteListBuffer,cVecArr) )
-    {
-        cm::moveCardToHome(Card(Card::DIAMONDS,3),cm::HMNHAND,cm::DECK,spriteListBuffer,cVecArr);
-        done3 = true;
-    }
 }
 
 
