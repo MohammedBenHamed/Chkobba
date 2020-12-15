@@ -22,6 +22,7 @@ void NewMode::run()
         cm::moveCardToHome(Card(Card::DIAMONDS,3),cm::DECK,cm::HMNHAND,spriteListBuffer,cVecArr);
         done2 = true;
     }
+
 }
 
 
