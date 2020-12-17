@@ -75,34 +75,24 @@ namespace cm
                 case cm::HMNHAND:
                 case cm::CPUHAND:
                 {
-                    float y;
-                    if (from == cm::CPUHAND) y = 20;
-                    else if (from == cm::HMNHAND) y = 460;
-                    if (cardVecs->at(from).size() == 2)
+                    for (int i = 0, j = 0; i<(int)cardVecs->at(from).size(); i++)
                     {
-                        if (cardVecs->at(from).at(0) == c)
+                        Card card = cardVecs->at(from).at(i);
+                        if ( cardVecs->at(from).at(i) != card )
                         {
-                            moveCard(cardVecs->at(from).at(1),from,X_HANDC1P1,y,1.86,0,sBuffer,cardVecs);
-                        }
-                        else if (cardVecs->at(from).at(1) == c)
-                        {
-                            moveCard(cardVecs->at(from).at(0),from,X_HANDC1P1,y,1.86,0,sBuffer,cardVecs);
+                            int x = xConstants[ xHANDStartArr[ cardVecs->at(from).size() - 2] + j ];
+                            float y;
+                            if (from == cm::CPUHAND) y = Y_HANDCPU;
+                            else if (from == cm::HMNHAND) y = Y_HANDHMN;
+                            moveCard(card,from,x,y,1.86,0,sBuffer,cardVecs);
+                            j++;
                         }
                     }
-                    if (cardVecs->at(from).size() == 3)
-                    {
-                        bool firstCardMoved = false;
-                        for (int i = 0; i<(int)cardVecs->at(from).size(); i++ )
-                        {
-                            Card card = cardVecs->at(from).at(i);
-                            if ( card != c && !firstCardMoved)
-                            {
-                                moveCard(card,from,X_HANDC2P1,y,1.86,0,sBuffer,cardVecs);
-                                firstCardMoved = true;
-                            }
-                            else if ( card != c && firstCardMoved) moveCard(card,from,X_HANDC2P2,y,1.86,0,sBuffer,cardVecs);
-                        }
-                    }
+                }
+                break;
+                case cm::TABLE:
+                {
+
                 }
                 break;
             }
@@ -124,34 +114,45 @@ namespace cm
                 case cm::CPUHAND:
                 {
                     float y;
-                    if (to == cm::CPUHAND) y = 20;
-                    else if (to == cm::HMNHAND) y = 460;
-                    if (cardVecs->at(to).size() == 1) moveCard(c,to,X_HANDC1P1,y,15,0,sBuffer,cardVecs);
-                    else if (cardVecs->at(to).size() == 2 )
+                    if (to == cm::CPUHAND) y = Y_HANDCPU;
+                    else if (to == cm::HMNHAND) y = Y_HANDHMN;
+                    for (unsigned int i = 0; i<cardVecs->at(to).size(); i++)
                     {
-                        Card firstCard = cardVecs->at(to).at(0);
-                        std::list<Sprite>::iterator firstCardIt = selectSprite(firstCard,to,sBuffer,cardVecs);
-                        if (!firstCardIt->updatePending())
-                        {
-                            moveCard(firstCard,to,X_HANDC2P1,y,1.6,0,sBuffer,cardVecs);
-                            moveCard(c,to,X_HANDC2P2,y,15,0,sBuffer,cardVecs);
-                        }
+                        Card card = cardVecs->at(to).at(i);
+                        int x = xConstants[ xHANDStartArr[ cardVecs->at(to).size() - 1] + i ];
+                        float spd;
+                        if (i == cardVecs->at(to).size() - 1 ) spd = 15;
+                        // set speed of the last card to highest (i.e. card that has just been added)
+                        else spd = 1.6;
+                        moveCard(card,to,x,y,spd,0,sBuffer,cardVecs);
                     }
-                    else if (cardVecs->at(to).size() == 3 )
-                    {
-                        Card firstCard = cardVecs->at(to).at(0);
-                        Card secondCard = cardVecs->at(to).at(1);
-                        std::list<Sprite>::iterator firstCardIt = selectSprite(firstCard,to,sBuffer,cardVecs);
-                        std::list<Sprite>::iterator secondCardIt = selectSprite(secondCard,to,sBuffer,cardVecs);
+                }
+                break;
+                case cm::TABLE:
+                {
 
-                        if (!firstCardIt->updatePending() && !secondCardIt->updatePending())
-                        {
-                            moveCard(firstCard,to,X_HANDC3P1,y,1.5,0,sBuffer,cardVecs);
-                            moveCard(secondCard,to,X_HANDC3P2,y,1.868,0,sBuffer,cardVecs);
-                            moveCard(c,to,X_HANDC3P3,y,15,0,sBuffer,cardVecs);
-                        }
+                    for (unsigned int i = 0; i<cardVecs->at(to).size(); i++)
+                    {
+                        Card card = cardVecs->at(to).at(i);
+                        int x;
+
+                        if (cardVecs->at(to).size()<=5)
+                        x = xConstants[ xTABLEStartArr[ (cardVecs->at(to).size() - 1) ] + i%5 ];
+                        else if (i<5) x = xConstants[ xTABLEStartArr[ 4 ] + i%5 ];
+                        else   x = xConstants[ xTABLEStartArr[ (cardVecs->at(to).size() -6) ] + i%5 ];
+
+                        float spd;
+                        if (i == cardVecs->at(to).size() - 1 ) spd = 15;
+                        // set speed of the last card to highest (i.e. card that has just been added)
+                        else spd = 1.6;
+                        float y;
+
+                        if (cardVecs->at(to).size()<=5) y = Y_TABLEMID;
+                        else if (i<5) y = Y_TABLEUPPER;
+                        else y = Y_TABLELOWER;
+
+                        moveCard(card,to,x,y,spd,0,sBuffer,cardVecs);
                     }
-                    // else throw exception
                 }
                 break;
             }
