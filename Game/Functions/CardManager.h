@@ -9,6 +9,8 @@
 #include <functional>
 #include "../../gfx/sprite.h"
 #include "../Card.h"
+//#include "CMHelperFunctions.h"
+#include "CMMacros.h"
 #include <algorithm>
 namespace cm
 {
@@ -22,6 +24,11 @@ namespace cm
     // starting positions for HAND locations
     constexpr std::array<uint8_t,5> xTABLEStartArr = {7,11,6,10,5};
     // starting positions for TABLE locations
+    constexpr std::array<int,3> xHandOddConsts   = {300,420,540};
+    constexpr std::array<int,2> xHandEvenConsts  = {353,486};
+    constexpr std::array<int,5> xTableOddConsts  = {60,180,300,420,540};
+    constexpr std::array<int,4> xTableEvenConsts = {108,236,364,492};
+
     constexpr int Y_HANDCPU = 20;
     constexpr int Y_HANDHMN = 460;
     constexpr int Y_TABLEUPPER = 170;
@@ -41,7 +48,7 @@ namespace cm
     void moveCard(Card c, Deck d, float x, float y, float spd, unsigned int wait, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     void moveCardToHome(Card c, Deck from, Deck to, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     bool cardUpdating(Card c, Deck d, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
-    //
+    bool deckUpdating(Deck d, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
 }
 
 #endif // CARDMANAGER_H

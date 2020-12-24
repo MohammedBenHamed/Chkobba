@@ -1,32 +1,6 @@
 #ifndef CMMACROS_H
 #define CMMACROS_H
 
-#define X_HANDC1P1 420
-#define X_HANDC2P1 353
-#define X_HANDC2P2 486
-#define X_HANDC3P1 300
-#define X_HANDC3P2 420
-#define X_HANDC3P3 540
-
-#define Y_HANDCPU 20
-#define Y_HANDHMN 460
-
-#define X_TABLEC1P1 60 + 240
-#define X_TABLEC2P1 60 + 176
-#define X_TABLEC2P2 60 + 304
-#define X_TABLEC3P1 60 + 120
-#define X_TABLEC3P2 60 + 240
-#define X_TABLEC3P3 60 + 360
-#define X_TABLEC4P1 60 + 48
-#define X_TABLEC4P2 60 + 176
-#define X_TABLEC4P3 60 + 304
-#define X_TABLEC4P4 60 + 432
-#define X_TABLEC5P1 60 + 0
-#define X_TABLEC5P2 60 + 120
-#define X_TABLEC5P3 60 + 240
-#define X_TABLEC5P4 60 + 360
-#define X_TABLEC5P5 60 + 480
-
 
 
 #endif // CMMACROS_H

@@ -1,8 +1,16 @@
 #include "CardManager.h"
-#include "CMHelperFunctions.cpp"
-#include "CMMacros.h"
 namespace cm
 {
+    // Prototype of helper functions
+    namespace
+    {
+        std::list<Sprite>::iterator selectSpriteEnd(Deck d, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
+        std::vector<Card>::iterator selectCard(Card c, Deck d, cVecArr_t* cardVecs);
+        std::list<Sprite>::iterator selectSprite(Card c, Deck d, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
+        void transferCard(Card c, Deck from, Deck to, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
+        std::tuple<float,float,float> getMoveParams(unsigned int cSize, int pos, Deck home, float cX, float cY);
+    }
+
     void addCard(Card c, Deck d, float x, float y, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs)
     {
         std::list<Sprite>::iterator spriteIt = selectSpriteEnd(d,sBuffer,cardVecs);
@@ -74,25 +82,21 @@ namespace cm
                 break; // No action needed
                 case cm::HMNHAND:
                 case cm::CPUHAND:
+                case cm::TABLE:
                 {
                     for (int i = 0, j = 0; i<(int)cardVecs->at(from).size(); i++)
                     {
                         Card card = cardVecs->at(from).at(i);
-                        if ( cardVecs->at(from).at(i) != card )
+                        if ( cardVecs->at(from).at(i) != c )
                         {
-                            int x = xConstants[ xHANDStartArr[ cardVecs->at(from).size() - 2] + j ];
-                            float y;
-                            if (from == cm::CPUHAND) y = Y_HANDCPU;
-                            else if (from == cm::HMNHAND) y = Y_HANDHMN;
-                            moveCard(card,from,x,y,1.86,0,sBuffer,cardVecs);
+                            float x, y, spd, cX, cY;
+                            sf::Vector2f coordinates = selectSprite(card,to,sBuffer,cardVecs)->getCoordinates();
+                            cX = coordinates.x; cY = coordinates.y;
+                            std::tie(x,y,spd) = getMoveParams(cardVecs->at(from).size()-1,j,from,cX,cY);
+                            moveCard(card,from,x,y,spd,0,sBuffer,cardVecs);
                             j++;
                         }
                     }
-                }
-                break;
-                case cm::TABLE:
-                {
-
                 }
                 break;
             }
@@ -102,55 +106,25 @@ namespace cm
                 case cm::DECK:
                 case cm::HMNPILE:
                 case cm::CPUPILE:
-                {
-                    float x, y;
-                    if (to == cm::DECK) x = 700, y = 240;
-                    else if (to == cm::HMNPILE) x = 20, y = 460;
-                    else if (to == cm::CPUPILE) x = 20, y = 20;
-                    moveCard(c,to,x,y,15,0,sBuffer,cardVecs);
+                { // Only move the latest card (input parameter c)
+                    float x, y, spd, cX, cY;
+                    sf::Vector2f coordinates = selectSprite(c,to,sBuffer,cardVecs)->getCoordinates();
+                    cX = coordinates.x; cY = coordinates.y;
+                    std::tie(x,y,spd) = getMoveParams(cardVecs->at(to).size(),0,to,cX,cY);
+                    moveCard(c,to,x,y,spd,0,sBuffer,cardVecs);
                 }
                 break;
                 case cm::HMNHAND:
                 case cm::CPUHAND:
-                {
-                    float y;
-                    if (to == cm::CPUHAND) y = Y_HANDCPU;
-                    else if (to == cm::HMNHAND) y = Y_HANDHMN;
-                    for (unsigned int i = 0; i<cardVecs->at(to).size(); i++)
-                    {
-                        Card card = cardVecs->at(to).at(i);
-                        int x = xConstants[ xHANDStartArr[ cardVecs->at(to).size() - 1] + i ];
-                        float spd;
-                        if (i == cardVecs->at(to).size() - 1 ) spd = 15;
-                        // set speed of the last card to highest (i.e. card that has just been added)
-                        else spd = 1.6;
-                        moveCard(card,to,x,y,spd,0,sBuffer,cardVecs);
-                    }
-                }
-                break;
                 case cm::TABLE:
-                {
-
+                { // Move all cards in the deck
                     for (unsigned int i = 0; i<cardVecs->at(to).size(); i++)
                     {
+                        float x, y, spd, cX, cY;
                         Card card = cardVecs->at(to).at(i);
-                        int x;
-
-                        if (cardVecs->at(to).size()<=5)
-                        x = xConstants[ xTABLEStartArr[ (cardVecs->at(to).size() - 1) ] + i%5 ];
-                        else if (i<5) x = xConstants[ xTABLEStartArr[ 4 ] + i%5 ];
-                        else   x = xConstants[ xTABLEStartArr[ (cardVecs->at(to).size() -6) ] + i%5 ];
-
-                        float spd;
-                        if (i == cardVecs->at(to).size() - 1 ) spd = 15;
-                        // set speed of the last card to highest (i.e. card that has just been added)
-                        else spd = 1.6;
-                        float y;
-
-                        if (cardVecs->at(to).size()<=5) y = Y_TABLEMID;
-                        else if (i<5) y = Y_TABLEUPPER;
-                        else y = Y_TABLELOWER;
-
+                        sf::Vector2f coordinates = selectSprite(card,to,sBuffer,cardVecs)->getCoordinates();
+                        cX = coordinates.x; cY = coordinates.y;
+                        std::tie(x,y,spd) = getMoveParams(cardVecs->at(to).size(),i,to,cX,cY);
                         moveCard(card,to,x,y,spd,0,sBuffer,cardVecs);
                     }
                 }
@@ -163,5 +137,112 @@ namespace cm
         std::list<Sprite>::iterator spriteIt = selectSprite(c,d,sBuffer,cardVecs);
         return spriteIt->updatePending();
     }
+
+    bool deckUpdating(Deck d, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs)
+    {
+        bool updating = false;
+        for (auto it = cardVecs->at(d).begin() ; it!= cardVecs->at(d).end(); ++it)
+        {
+            if (selectSprite(*it,d,sBuffer,cardVecs)->updatePending() == true) updating = true;
+        }
+        return updating;
+    }
+
+    // Defining helper functions
+    namespace
+    {
+        std::list<Sprite>::iterator selectSpriteEnd(Deck d, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs)
+        {
+            auto spriteIt = sBuffer->begin();
+            int distance = 0;
+            for (int i = DECK; i<=d; i++)
+            {
+                distance += cardVecs->at(i).size(); // Add up sizes until d, first size (DECK) will be ignored
+            }
+            std::advance(spriteIt,distance);
+            return spriteIt;
+        }
+        std::vector<Card>::iterator selectCard(Card c, Deck d, cVecArr_t* cardVecs)
+        {
+            return std::find(cardVecs->at(d).begin(),cardVecs->at(d).end(),c);
+        }
+        std::list<Sprite>::iterator selectSprite(Card c, Deck d, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs)
+        {
+            auto spriteIt = sBuffer->begin();
+            auto it = std::find(cardVecs->at(d).begin(),cardVecs->at(d).end(),c);
+            int distance = std::distance(cardVecs->at(d).begin(),it); // position of card in particular deck vector
+            for (int i = DECK; i<d; i++)
+            {
+                distance += cardVecs->at(i).size(); // Add up sizes until (d-1), first size (DECK) will be ignored
+            }
+            std::advance(spriteIt,distance); // advance to relevant position
+            return spriteIt;
+        }
+        void transferCard(Card c, Deck from, Deck to, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs)
+        {
+            std::list<Sprite>::iterator spriteIt = selectSprite(c,from,sBuffer,cardVecs);
+            float x = spriteIt->getCoordinates().x; float y = spriteIt->getCoordinates().y;
+            // x and y temporarily store coordinates for the transfer
+            removeCard(c,from,sBuffer,cardVecs);
+            addCard(c,to,x,y,sBuffer,cardVecs);
+        }
+
+        std::tuple<float,float,float> getMoveParams(unsigned int cSize, int pos, Deck home, float cX, float cY)
+        {
+            float x, y, spd;
+            switch (home)
+            {
+                case cm::DECK:
+                x = 700, y = 240;
+                break;
+                case cm::HMNPILE:
+                x = 20, y = 460;
+                break;
+                case cm::CPUPILE:
+                x = 20, y = 20;
+                break;
+                case cm::HMNHAND:
+                case cm::CPUHAND:
+                {
+                    if (home == cm::CPUHAND) y = Y_HANDCPU;
+                    else y = Y_HANDHMN;
+                    if (cSize == 1) x = xHandOddConsts[1];
+                    else if (cSize == 2) x = xHandEvenConsts[pos];
+                    else if (cSize == 3) x = xHandOddConsts[pos];
+                }
+                break;
+                case cm::TABLE:
+                {
+                    if (cSize<=5) y = Y_TABLEMID;
+                    else if (pos<5) y = Y_TABLEUPPER;
+                    else y = Y_TABLELOWER;
+                    if (cSize>5 && pos>=5)  //  Use 1-5 sizes for pos values more than 5
+                    {
+                        cSize -= 5;
+                        pos   -= 5;
+                    }
+                    else if (cSize>5 && pos <5) cSize = 5; // Use cSize 5 for first 5 cards
+                    if (cSize%2 == 0 ) // even Size
+                    {
+                        int start = (4 - cSize)/2;
+                        x = xTableEvenConsts[start + pos];
+                    }
+                    else
+                    {
+                        int start = (5 - cSize)/2;
+                        x = xTableOddConsts[start + pos];
+                    }
+                };
+                break;
+            }
+            float distance = std::sqrt( (x-cX)*(x-cX) + (y-cY)*(y-cY) ); // calculate distance using Pythagoras' theorem
+            spd = distance/30; // Speed is calculated so movement takes half a second i.e. 30 frames
+            return std::make_tuple(x,y,spd);
+        }
+
+
+    }
+
+
 
 }

@@ -4,6 +4,6 @@ int main()
 {
     Game game;
     game.run();
-    std::cout << "Done\n";
+    std::cout << "Game successfully ended\n";
     return 0;
 }

@@ -5,7 +5,6 @@ void Game::updateSprites()
     std::vector<std::list<Sprite>::iterator> itVec; // Contains iterators pointing to Sprites to be drawn at the top
     for (auto it = spriteListBuffer.begin(); it != spriteListBuffer.end(); ++it)
     {
-
         if ( it->updatePending() && it->getUpdate().c == Update::MOVE && !(it)->needToWait() )
             // Prioritise sprites that are moving (which takes the waiting period into consideration)
         {
@@ -14,7 +13,6 @@ void Game::updateSprites()
         else
         it->draw(window);
     }
-
     for (std::list<Sprite>::iterator it : itVec)
     {
         it->draw(window); //Draw moving sprites
@@ -29,7 +27,6 @@ void Game::updateSprites()
         std::vector<std::list<Sprite>::iterator> itVec; // Contains iterators pointing to Sprites to be deleted
         for (auto it = spriteListBuffer.begin(); it != spriteListBuffer.end(); ++it)
         {
-
             if ( (it)->updatePending())
             {
                 if ( (it)->needToWait()  ) (it)->decWait();
