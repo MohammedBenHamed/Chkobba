@@ -5,11 +5,14 @@
 #include "Card.h"
 #include "Modes/Mode.h"
 #include "Modes/NewMode.h"
+#include "Modes/Intro.h"
 #include "Functions/CardManager.h"
 #include <list>
+#include <sstream>
+#include <fstream>
 #include <iostream>
 #include <deque>
-#include <map>
+#include <set>
 #include <memory>
 #include <type_traits>
 #include <iostream>
@@ -22,7 +25,8 @@ class Game
     sf::Sprite background;
     sf::Texture b_pic;
     sf::Event event;
-    Mode::ModeName modename = Mode::INTROANIMATION;
+    Mode::ModeName modename = Mode::INTRO;
+
     std::list<Sprite> spriteListBuffer;
     cm::cVecArr_t cVecArr;
     std::unique_ptr<Mode> mode = nullptr;
@@ -33,5 +37,13 @@ class Game
     public:
     Game();
     void run();
+    struct compFunc
+    {
+        bool operator()(const std::list<Sprite>::iterator &lhs, const std::list<Sprite>::iterator &rhs) const;
+    };
+    private:
+    std::multiset<std::list<Sprite>::iterator,compFunc> itSet; // Contains iterators whose order will be used when drawing
+    std::ofstream file;
+    unsigned long long int frameCount = 0;
 };
 #endif // GAME_H

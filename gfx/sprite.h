@@ -14,6 +14,7 @@ class Sprite
     sf::Texture texture;
     std::queue<Update> updateQueue;
     bool visibility = 1;
+    int8_t priority = 0; // Determines which sprite is drawn on top, -127 drawn first, 128 drawn last, 0 is default
     public:
     Sprite ();
     Sprite (float lenx, float leny, float x, float y, std::string fileName, std::queue<Update> updateQueue);
@@ -31,11 +32,13 @@ class Sprite
     void addUpdate(Update update);
     void popUpdate();
     bool isSelected (sf::RenderWindow& window); // Returns true if user has mouse of this sprite
-    bool updatePending();
+    bool updatePending() const;
     bool needToWait();
     void decWait();
     void setVisibility(bool visibility);
-    int getNumOfUpdates();
+    unsigned int getNumOfUpdates() const;
+    int8_t getPriority() const;
+    void setPriority(int8_t priority);
 
 };
 bool operator>(const Sprite& lhs, const Sprite& rhs);

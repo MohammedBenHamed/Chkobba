@@ -21,6 +21,14 @@ namespace cm
         sBuffer->insert(spriteIt,sprite);
         cardVecs->at(d).push_back(c);
     }
+    void alterCardPriority(Card c, Deck d, int8_t priority, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs)
+    {
+        std::list<Sprite>::iterator spriteIt = selectSprite(c,d,sBuffer,cardVecs);
+        if (spriteIt != sBuffer->end())
+        {
+            spriteIt->addUpdate(Update(Update::CHANGEPRIORITY,priority));
+        }
+    }
     void removeCard(Card c, Deck d, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs)
     {
         std::list<Sprite>::iterator spriteIt = selectSprite(c,d,sBuffer,cardVecs);

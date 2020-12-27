@@ -7,7 +7,10 @@ Game::Game()
     text = sf::Text("", font);
     background.setTexture(b_pic);
     std::srand(std::time(0));
-    modename = Mode::NEWMODE;
+    modename = Mode::INTRO;
+
+    file.open("logs.txt",std::ios::out);
+
 }
 
 void Game::modeRun()
@@ -17,7 +20,17 @@ void Game::modeRun()
         case Mode::NEWMODE:
         {
             if ( dynamic_cast<NewMode*>(mode.get()) == 0) // only change mode if it is not already NEWMODE
-            mode = std::unique_ptr<Mode> { std::make_unique<NewMode>(&spriteListBuffer, &cVecArr)  };
+            {
+                mode = std::unique_ptr<Mode> { std::make_unique<NewMode>(&spriteListBuffer, &cVecArr)  };
+            }
+        }
+        break;
+        case Mode::INTRO:
+        {
+            if ( dynamic_cast<Intro*>(mode.get()) == 0) // only change mode if it is not already NEWMODE
+            {
+                mode = std::unique_ptr<Mode> { std::make_unique<Intro>(&spriteListBuffer, &cVecArr, mode.get())  };
+            }
         }
         break;
         default:
@@ -44,4 +57,15 @@ void Game::run()
         modeRun();
         window.display();
     }
+}
+
+
+bool Game::compFunc::operator()(const std::list<Sprite>::iterator &lhs, const std::list<Sprite>::iterator &rhs) const
+{
+    if (lhs->getPriority() != rhs->getPriority()) return lhs->getPriority() < rhs->getPriority();
+    // Check if priority values differ
+    else if (lhs->updatePending() != rhs->updatePending())
+    return lhs->updatePending() < rhs->updatePending();
+    else return std::distance(lhs,rhs)<0;
+    // Otherwise, draw cards that aren't updating first
 }

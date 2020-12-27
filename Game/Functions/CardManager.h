@@ -14,12 +14,6 @@
 #include <algorithm>
 namespace cm
 {
-    constexpr std::array<int,14> xConstants = {300,420,540,353,486,60,180,300,420,540,108,236,364,492};
-    // x coordinates that cards take when moving to CPUHAND, HMNHAND and TABLE "deck"s.
-    // first 3 - HAND positions when size = 1 or 3
-    // 4 and 5 - HAND positions when size = 2
-    // 60 to 640 - TABLE positions when size%5 + 1 = 5,3,1
-    // 108 to end - TABLE positions when size%5 + 1 = 2,4
     constexpr std::array<uint8_t,3> xHANDStartArr = {1,3,0};
     // starting positions for HAND locations
     constexpr std::array<uint8_t,5> xTABLEStartArr = {7,11,6,10,5};
@@ -43,10 +37,12 @@ namespace cm
     };
     void addCard(Card c, Deck d, float x, float y, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     void removeCard(Card c, Deck d, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
+    void alterCardPriority(Card c, Deck d, int8_t priority, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     void flipCard(Card c, Deck d, unsigned int wait, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     void instantFlipCard(Card c, Deck d, unsigned int wait, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     void moveCard(Card c, Deck d, float x, float y, float spd, unsigned int wait, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     void moveCardToHome(Card c, Deck from, Deck to, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
+    // Must check if card from "from" is not moving to move card to a certain home
     bool cardUpdating(Card c, Deck d, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     bool deckUpdating(Deck d, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
 }

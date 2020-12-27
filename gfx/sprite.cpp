@@ -64,7 +64,7 @@ void Sprite::addUpdate(Update update)
 
 
 void Sprite::popUpdate() {updateQueue.pop();}
-bool Sprite::updatePending()
+bool Sprite::updatePending() const
 {
     return updateQueue.size() != 0;
 }
@@ -72,7 +72,10 @@ bool Sprite::needToWait() {return updateQueue.front().wait != 0;}
 void Sprite::decWait() {updateQueue.front().wait--;}
 void Sprite::setVisibility(bool visibility) {this->visibility = visibility;}
 
-int Sprite::getNumOfUpdates(){return updateQueue.size();}
+unsigned int Sprite::getNumOfUpdates() const{return updateQueue.size();}
+int8_t Sprite::getPriority() const{return priority;}
+void Sprite::setPriority(int8_t priority) {this->priority = priority;}
+
 
 
 
@@ -106,6 +109,7 @@ bool operator<(const Sprite& lhs, const Sprite& rhs)
 
 std::ostream& operator<< (std::ostream &out, const Sprite &sprite) // for debugging/logging reasons
 {
-    out << sprite.getCoordinates().x << " " << sprite.getCoordinates().y;
+    out << sprite.getCoordinates().x << " " << sprite.getCoordinates().y << " p: " << static_cast<int>(sprite.getPriority())
+    << " u: " << sprite.getNumOfUpdates();
     return out;
 }

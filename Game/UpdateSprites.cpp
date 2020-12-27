@@ -2,23 +2,16 @@
 
 void Game::updateSprites()
 {
-    std::vector<std::list<Sprite>::iterator> itVec; // Contains iterators pointing to Sprites to be drawn at the top
+
     for (auto it = spriteListBuffer.begin(); it != spriteListBuffer.end(); ++it)
     {
-        if ( it->updatePending() && it->getUpdate().c == Update::MOVE && !(it)->needToWait() )
-            // Prioritise sprites that are moving (which takes the waiting period into consideration)
-        {
-            itVec.push_back(it);
-        }
-        else
+        itSet.insert(it);
+    }
+    for (std::list<Sprite>::iterator it : itSet)
+    {
         it->draw(window);
     }
-    for (std::list<Sprite>::iterator it : itVec)
-    {
-        it->draw(window); //Draw moving sprites
-    }
-    itVec.clear();
-
+    itSet.clear();
     if (!(text.getString() == "")) window.draw(text); // Only draw text if String is not empty
 
     if (clock.getElapsedTime().asMilliseconds() > 16)
@@ -99,6 +92,13 @@ void Game::updateSprites()
                             (it)->popUpdate();
                         }
                         break;
+                        case Update::CHANGEPRIORITY:
+                        {
+                            int8_t nPriority = (it)->getUpdate().priority_new;
+                            (it)->setPriority(nPriority);
+                            (it)->popUpdate();
+                        }
+                        break;
 
                     };
                 }
@@ -109,7 +109,6 @@ void Game::updateSprites()
         {
             spriteListBuffer.erase(it); //Remove any sprites that have been marked for deletion
         }
-
 
     }
 

@@ -12,7 +12,7 @@ class Mode
     public:
     enum ModeName
     {
-        INTROANIMATION, CHOOSEFIRSTCARD, MAINGAMESELECT, NEWMODE
+        INTRO, CHOOSEFIRSTCARD, MAINGAMESELECT, NEWMODE
     };
     virtual void run() = 0;
 };
