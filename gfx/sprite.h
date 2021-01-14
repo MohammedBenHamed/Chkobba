@@ -31,7 +31,8 @@ class Sprite
     void addUpdates(std::queue<Update> updateQueue);
     void addUpdate(Update update);
     void popUpdate();
-    bool isSelected (sf::RenderWindow& window); // Returns true if user has mouse of this sprite
+    void clearUpdates();
+    bool coordInSprite(float xCoord, float yCoord); // Returns true if coordinates are in the sprite's boundary
     bool updatePending() const;
     bool needToWait();
     void decWait();

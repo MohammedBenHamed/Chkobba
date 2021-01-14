@@ -3,6 +3,7 @@
 #include "../../gfx/sprite.h"
 #include "../Card.h"
 #include "../Functions/CardManager.h"
+#include "../Functions/ButtonManager.h"
 #include <memory>
 #include <deque>
 #include <vector>
@@ -12,7 +13,7 @@ class Mode
     public:
     enum ModeName
     {
-        INTRO, CHOOSEFIRSTCARD, MAINGAMESELECT, NEWMODE
+        INTRO, CHOOSEFIRSTCARD, MAINPHASE, NEWMODE
     };
     virtual void run() = 0;
 };

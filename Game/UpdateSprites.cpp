@@ -2,7 +2,6 @@
 
 void Game::updateSprites()
 {
-
     for (auto it = spriteListBuffer.begin(); it != spriteListBuffer.end(); ++it)
     {
         itSet.insert(it);
@@ -16,6 +15,21 @@ void Game::updateSprites()
 
     if (clock.getElapsedTime().asMilliseconds() > 16)
     {
+
+        /*
+        sf::Vector2u windowSize = window.getSize();
+        sf::Texture texture;
+        texture.create(windowSize.x, windowSize.y);
+        texture.update(window);
+        sf::Image screenshot = texture.copyToImage();
+        std::string imageName = "Frames/Img" + std::to_string(frameCount) + ".png";
+
+        screenshot.saveToFile(imageName);
+
+        frameCount++;
+        */
+
+
         clock.restart();
         std::vector<std::list<Sprite>::iterator> itVec; // Contains iterators pointing to Sprites to be deleted
         for (auto it = spriteListBuffer.begin(); it != spriteListBuffer.end(); ++it)
@@ -26,6 +40,7 @@ void Game::updateSprites()
                 else
                 {
                     const Update update = it->getUpdate();
+
                     switch(update.c)
                     {
                         case Update::NONE:

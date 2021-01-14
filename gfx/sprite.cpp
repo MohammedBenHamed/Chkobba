@@ -33,15 +33,9 @@ void Sprite::setTexture (sf::Texture texture) {this->texture = texture;}
 void Sprite::setTexture (std::string fileName) {texture.loadFromFile(fileName);}
 void Sprite::displace(float dx, float dy) {x+= dx; y+= dy;}
 
-bool Sprite::isSelected(sf::RenderWindow& window)
+bool Sprite::coordInSprite(float xCoord, float yCoord)
 {
-    if (window.hasFocus() == 0 || !visibility ) return 0;
-    sf::Vector2i mPos = sf::Mouse::getPosition(window);
-    if (mPos.x > x && mPos.x < (x + lenx -1) && mPos.y > y && mPos.y < (y + leny -1))
-    {
-        return 1;
-    }
-    else return 0;
+    return (xCoord > x && xCoord < (x + lenx -1) && yCoord > y && yCoord < (y + leny -1));
 }
 void Sprite::stretch(float dlenx, float dleny) {lenx+=dlenx; leny+=dleny;}
 sf::Vector2f Sprite::getCoordinates() const {return sf::Vector2f(x,y);}
@@ -64,6 +58,11 @@ void Sprite::addUpdate(Update update)
 
 
 void Sprite::popUpdate() {updateQueue.pop();}
+
+void Sprite::clearUpdates()
+{
+    while (!updateQueue.empty()) updateQueue.pop();
+}
 bool Sprite::updatePending() const
 {
     return updateQueue.size() != 0;

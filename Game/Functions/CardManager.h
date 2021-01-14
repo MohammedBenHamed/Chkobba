@@ -12,6 +12,9 @@
 //#include "CMHelperFunctions.h"
 #include "CMMacros.h"
 #include <algorithm>
+#include <random>
+
+#include <iterator>
 namespace cm
 {
     constexpr std::array<uint8_t,3> xHANDStartArr = {1,3,0};
@@ -41,10 +44,14 @@ namespace cm
     void flipCard(Card c, Deck d, unsigned int wait, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     void instantFlipCard(Card c, Deck d, unsigned int wait, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     void moveCard(Card c, Deck d, float x, float y, float spd, unsigned int wait, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
-    void moveCardToHome(Card c, Deck from, Deck to, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
+    void moveCard(std::list<Sprite>::iterator spriteIt, float x, float y, float spd, unsigned int wait, std::list<Sprite>* sBuffer);
+    void moveCardToHome(Card c, Deck from, Deck to, unsigned int wait, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     // Must check if card from "from" is not moving to move card to a certain home
     bool cardUpdating(Card c, Deck d, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     bool deckUpdating(Deck d, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
+    bool spriteIsCard(std::list<Sprite>::iterator spriteIt, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
+    std::pair<Card,Deck> getCardFromSprite(std::list<Sprite>::iterator cIt, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
+    void shuffleCards(std::mt19937* randGen, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
 }
 
 #endif // CARDMANAGER_H

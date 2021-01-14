@@ -76,7 +76,11 @@ namespace cm
         std::list<Sprite>::iterator spriteIt = selectSprite(c,d,sBuffer,cardVecs);
         if (spriteIt != sBuffer->end()) spriteIt->addUpdate(Update(Update::MOVE,x,y,spd,wait));
     }
-    void moveCardToHome(Card c, Deck from, Deck to, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs)
+    void moveCard(std::list<Sprite>::iterator spriteIt, float x, float y, float spd, unsigned int wait, std::list<Sprite>* sBuffer)
+    {
+        if (spriteIt != sBuffer->end()) spriteIt->addUpdate(Update(Update::MOVE,x,y,spd,wait));
+    }
+    void moveCardToHome(Card c, Deck from, Deck to, unsigned int wait, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs)
     {
         std::list<Sprite>::iterator spriteIt = selectSprite(c,from,sBuffer,cardVecs);
         if (spriteIt != sBuffer->end() && ( !spriteIt->updatePending() ||  spriteIt->getUpdate().c != Update::MOVE ) )
@@ -108,7 +112,7 @@ namespace cm
                 }
                 break;
             }
-            transferCard(c,from,to,sBuffer,cardVecs);
+            if (from != to) transferCard(c,from,to,sBuffer,cardVecs);
             switch (to)
             {
                 case cm::DECK:
@@ -119,7 +123,7 @@ namespace cm
                     sf::Vector2f coordinates = selectSprite(c,to,sBuffer,cardVecs)->getCoordinates();
                     cX = coordinates.x; cY = coordinates.y;
                     std::tie(x,y,spd) = getMoveParams(cardVecs->at(to).size(),0,to,cX,cY);
-                    moveCard(c,to,x,y,spd,0,sBuffer,cardVecs);
+                    moveCard(c,to,x,y,spd,wait,sBuffer,cardVecs);
                 }
                 break;
                 case cm::HMNHAND:
@@ -133,7 +137,7 @@ namespace cm
                         sf::Vector2f coordinates = selectSprite(card,to,sBuffer,cardVecs)->getCoordinates();
                         cX = coordinates.x; cY = coordinates.y;
                         std::tie(x,y,spd) = getMoveParams(cardVecs->at(to).size(),i,to,cX,cY);
-                        moveCard(card,to,x,y,spd,0,sBuffer,cardVecs);
+                        moveCard(card,to,x,y,spd,wait,sBuffer,cardVecs);
                     }
                 }
                 break;
@@ -155,6 +159,52 @@ namespace cm
         }
         return updating;
     }
+
+
+    std::pair<Card,Deck> getCardFromSprite(std::list<Sprite>::iterator cIt, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs)
+    {
+        int d = DECK; // Start from beginning
+        unsigned int cardPos = std::distance(sBuffer->begin(),cIt);
+        while (!(cardPos<cardVecs->at(d).size()))
+        {
+            cardPos -= cardVecs->at(d).size();
+            d++;
+        }
+        return std::make_pair(cardVecs->at(d).at(cardPos),static_cast<Deck>(d));
+
+    }
+
+    bool spriteIsCard(std::list<Sprite>::iterator spriteIt, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs)
+    {
+        int numOfCards = 0;
+        for (int i = DECK; i<=CPUPILE; i++)
+        {
+            numOfCards += cardVecs->at(i).size(); // Add up all sizes
+        }
+        return std::distance(sBuffer->begin(),spriteIt) < numOfCards ;
+    }
+    void shuffleCards(std::mt19937* randGen, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs)
+    {
+        std::vector<int> vec {1,3,4};
+        for (int i = DECK; i<=CPUPILE; i++)
+        {
+            // Shuffle all cards in particular deck
+            std::shuffle(cardVecs->at(i).begin(), cardVecs->at(i).end(), *randGen);
+            for (Card c : cardVecs->at(i) )
+            {
+                std::string filename;
+                if (c.flipped) filename = "images/e.png";
+                else filename = "images/" + std::to_string(c.spriteID) + ".png";
+                std::list<Sprite>::iterator spriteIt = selectSprite(c,static_cast<Deck>(i),sBuffer,cardVecs);
+                spriteIt->addUpdate(Update(Update::CHANGETEX,filename,0)); // Change texture of current card if needed
+            }
+
+        };
+    }
+
+
+
+
 
     // Defining helper functions
     namespace

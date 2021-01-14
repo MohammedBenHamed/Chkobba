@@ -8,9 +8,6 @@ Game::Game()
     background.setTexture(b_pic);
     std::srand(std::time(0));
     modename = Mode::INTRO;
-
-    file.open("logs.txt",std::ios::out);
-
 }
 
 void Game::modeRun()
@@ -21,15 +18,26 @@ void Game::modeRun()
         {
             if ( dynamic_cast<NewMode*>(mode.get()) == 0) // only change mode if it is not already NEWMODE
             {
-                mode = std::unique_ptr<Mode> { std::make_unique<NewMode>(&spriteListBuffer, &cVecArr)  };
+                mode = std::unique_ptr<Mode> { std::make_unique<NewMode>(&spriteListBuffer, &cVecArr, &mReading, &bStatusArr,
+                                                                         &randGen)  };
             }
         }
         break;
         case Mode::INTRO:
         {
-            if ( dynamic_cast<Intro*>(mode.get()) == 0) // only change mode if it is not already NEWMODE
+            if ( dynamic_cast<Intro*>(mode.get()) == 0) // only change mode if it is not already INTRO
             {
-                mode = std::unique_ptr<Mode> { std::make_unique<Intro>(&spriteListBuffer, &cVecArr, mode.get())  };
+                mode = std::unique_ptr<Mode> { std::make_unique<Intro>(&spriteListBuffer, &cVecArr, &modename ,&text,
+                                                                    &mReading, &bStatusArr, &randGen)  };
+            }
+        }
+        break;
+        case Mode::MAINPHASE:
+        {
+            if ( dynamic_cast<MainPhase*>(mode.get()) == 0) // only change mode if it is not already MAINPHASE
+            {
+                mode = std::unique_ptr<Mode> { std::make_unique<MainPhase>(&spriteListBuffer, &cVecArr, &modename,
+                                                                        &mReading, &bStatusArr)  };
             }
         }
         break;
@@ -46,9 +54,24 @@ void Game::run()
     {
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
+            if (event.type == sf::Event::Closed) window.close();
+            else if (event.type == sf::Event::MouseButtonPressed)
             {
-                window.close();
+                if (event.mouseButton.button == sf::Mouse::Left)
+                {
+                   mReading.xPressed = event.mouseButton.x;
+                   mReading.yPressed = event.mouseButton.y;
+                   mReading.pressedDone = true;
+                }
+            }
+            else if (event.type == sf::Event::MouseButtonReleased)
+            {
+                if (event.mouseButton.button == sf::Mouse::Left)
+                {
+                    mReading.xReleased = event.mouseButton.x;
+                    mReading.yReleased = event.mouseButton.y;
+                    mReading.releasedDone = true;
+                }
             }
         }
         window.clear();

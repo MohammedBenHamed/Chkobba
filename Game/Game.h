@@ -3,10 +3,15 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include "Card.h"
+#include "MouseReading.h"
 #include "Modes/Mode.h"
 #include "Modes/NewMode.h"
 #include "Modes/Intro.h"
+#include "Modes/MainPhase.h"
 #include "Functions/CardManager.h"
+#include "Functions/ButtonManager.h"
+#include <random>
+#include <ctime>
 #include <list>
 #include <sstream>
 #include <fstream>
@@ -16,25 +21,26 @@
 #include <memory>
 #include <type_traits>
 #include <iostream>
-#include <ctime>
 class Game
 {
     private:
     sf::Clock clock;
-    sf::RenderWindow window;
     sf::Sprite background;
+    std::unique_ptr<Mode> mode = nullptr;
+    sf::RenderWindow window;
     sf::Texture b_pic;
     sf::Event event;
     Mode::ModeName modename = Mode::INTRO;
-
     std::list<Sprite> spriteListBuffer;
     cm::cVecArr_t cVecArr;
-    std::unique_ptr<Mode> mode = nullptr;
+    bm::bStatusArr_t bStatusArr = {false,false,false,false,false};
     sf::Font font;
     sf::Text text;
+    MouseReading mReading;
+    std::mt19937 randGen = std::mt19937(std::time(nullptr));
+    public:
     void modeRun();
     void updateSprites();
-    public:
     Game();
     void run();
     struct compFunc

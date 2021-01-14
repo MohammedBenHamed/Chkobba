@@ -1,22 +1,29 @@
 #include "NewMode.h"
 
-NewMode::NewMode(std::list<Sprite>* spritelistbuffer, cm::cVecArr_t* cvecarr)
-: spriteListBuffer(spritelistbuffer), cVecArr(cvecarr)
+NewMode::NewMode(std::list<Sprite>* spritelistbuffer, cm::cVecArr_t* cvecarr, MouseReading* mread,
+                 bm::bStatusArr_t* bstatusarr, std::mt19937* randgen)
+: spriteListBuffer(spritelistbuffer), cVecArr(cvecarr), mRead(mread), bStatusArr(bstatusarr), randGen(randgen)
 {
-    for (int i = 1; i <=10; i++)
+     for (int i = 0; i<40; i++)
     {
-        cm::addCard(Card(Card::DIAMONDS,i),cm::DECK,(i-1)*40,0,spriteListBuffer,cVecArr);
+        cm::addCard(Card(static_cast<Card::Suit>(i%4),i/4 + 1,false),cm::DECK,60+15*i,80,spriteListBuffer,cVecArr);
+        cm::alterCardPriority(Card(static_cast<Card::Suit>(i%4),i/4 + 1,false),cm::DECK,static_cast<int8_t>(i)-38,spriteListBuffer,cVecArr);
     }
+
+
+
 };
 
 void NewMode::run()
 {
-    if (!cm::deckUpdating(cm::DECK,spriteListBuffer,cVecArr) && !cm::deckUpdating(cm::TABLE,spriteListBuffer,cVecArr)  )
+
+    if (mRead->pressedDone && mRead->releasedDone)
     {
-        if (STAGE<=10)
-        {
-            cm::moveCardToHome(Card(Card::DIAMONDS,STAGE),cm::DECK,cm::TABLE,spriteListBuffer,cVecArr);
-            STAGE++;
-        }
+        mRead->pressedDone  = false;
+        mRead->releasedDone = false;
+        cm::shuffleCards(randGen,spriteListBuffer,cVecArr);
     }
+
+
+
 }
