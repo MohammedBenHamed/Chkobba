@@ -31,15 +31,18 @@ namespace bm
     }
     void deactivateButton(buttonType bType, std::list<Sprite>* sBuffer, bStatusArr_t* bStatusArr)
     {
-        bStatusArr->at(bType) = false;
-        std::list<Sprite>::iterator spriteIt = sBuffer->end();
-        signed int sBufferOffset = -1;
-        for (int i = PLAY; i>bType; i--)
+        if (bStatusArr->at(bType) ==  true) // only delete sprite if it's currently activated
         {
-            if (bStatusArr->at(i) == true) sBufferOffset--;
+            bStatusArr->at(bType) = false;
+            std::list<Sprite>::iterator spriteIt = sBuffer->end();
+            signed int sBufferOffset = -1;
+            for (int i = PLAY; i>bType; i--)
+            {
+                if (bStatusArr->at(i) == true) sBufferOffset--;
+            }
+            std::advance(spriteIt,sBufferOffset);
+            sBuffer->erase(spriteIt);
         }
-        std::advance(spriteIt,sBufferOffset);
-        sBuffer->erase(spriteIt);
     }
     buttonType getBTypeFromSprite(std::list<Sprite>::iterator sIt, std::list<Sprite>* sBuffer, bStatusArr_t* bStatusArr)
     {

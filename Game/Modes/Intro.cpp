@@ -5,6 +5,7 @@ Intro::Intro(std::list<Sprite>* spritelistbuffer, cm::cVecArr_t* cvecarr, Mode::
 {
 
     // -- NORMAL
+    /*
     for (int i = 0; i<40; i++)
     {
         cm::addCard(Card(static_cast<Card::Suit>(i%4),i/4 + 1),cm::DECK,60,80,spriteListBuffer,cVecArr);
@@ -28,20 +29,17 @@ Intro::Intro(std::list<Sprite>* spritelistbuffer, cm::cVecArr_t* cvecarr, Mode::
             cm::flipCard(c,cm::DECK,0,spriteListBuffer,cVecArr);
         }
     }
+    */
     // - INSTANT
-    /*
     for (int i = 0; i<40; i++)
     {
         cm::addCard(Card(static_cast<Card::Suit>(i%4),i/4 + 1,true),cm::DECK,60+15*i,80,spriteListBuffer,cVecArr);
         cm::alterCardPriority(Card(static_cast<Card::Suit>(i%4),i/4 + 1,true),cm::DECK,static_cast<int8_t>(i)-38,spriteListBuffer,cVecArr);
     }
-    */
-
 };
 
 void Intro::run()
 {
-
     switch(modeStage)
     {
         case INTRO_ANIM:
@@ -78,7 +76,6 @@ void Intro::run()
                 if (it->getCoordinates().y != yPos && ( !it->updatePending() || currentUpdate.y_new != yPos ) )
                     cm::moveCard(it,xPos,yPos,4,2,spriteListBuffer);
             }
-
             if (mRead->pressedDone && mRead->releasedDone)
             {
                 mRead->pressedDone  = false;
@@ -207,13 +204,7 @@ void Intro::run()
         break;
         case DRAWBUTTON:
         {
-            if (!cm::deckUpdating(cm::DECK,spriteListBuffer,cVecArr))
-            {
-                bm::activateButton(bm::PLAY,spriteListBuffer,bStatusArr);
-                *mPtr = Mode::MAINPHASE;
-            }
-
-
+            if (!cm::deckUpdating(cm::DECK,spriteListBuffer,cVecArr)) *mPtr = Mode::MAINPHASE;
         }
         break;
     }

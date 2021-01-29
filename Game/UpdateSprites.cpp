@@ -15,9 +15,7 @@ void Game::updateSprites()
 
     if (clock.getElapsedTime().asMilliseconds() > 16)
     {
-
-        /*
-        sf::Vector2u windowSize = window.getSize();
+        /*sf::Vector2u windowSize = window.getSize();
         sf::Texture texture;
         texture.create(windowSize.x, windowSize.y);
         texture.update(window);
@@ -28,7 +26,6 @@ void Game::updateSprites()
 
         frameCount++;
         */
-
 
         clock.restart();
         std::vector<std::list<Sprite>::iterator> itVec; // Contains iterators pointing to Sprites to be deleted

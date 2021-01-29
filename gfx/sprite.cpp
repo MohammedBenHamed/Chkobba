@@ -31,6 +31,12 @@ void Sprite::setLengths (float x, float y)
 }
 void Sprite::setTexture (sf::Texture texture) {this->texture = texture;}
 void Sprite::setTexture (std::string fileName) {texture.loadFromFile(fileName);}
+void Sprite::setColour(uint8_t r, uint8_t g, uint8_t b)
+{
+    sprite.setColor(sf::Color(r,g,b));
+}
+
+
 void Sprite::displace(float dx, float dy) {x+= dx; y+= dy;}
 
 bool Sprite::coordInSprite(float xCoord, float yCoord)
@@ -56,7 +62,6 @@ void Sprite::addUpdate(Update update)
     this->updateQueue.push(update);
 }
 
-
 void Sprite::popUpdate() {updateQueue.pop();}
 
 void Sprite::clearUpdates()
@@ -74,10 +79,6 @@ void Sprite::setVisibility(bool visibility) {this->visibility = visibility;}
 unsigned int Sprite::getNumOfUpdates() const{return updateQueue.size();}
 int8_t Sprite::getPriority() const{return priority;}
 void Sprite::setPriority(int8_t priority) {this->priority = priority;}
-
-
-
-
 
 bool operator>(const Sprite& lhs, const Sprite& rhs)
 {

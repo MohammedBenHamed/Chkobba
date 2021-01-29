@@ -23,6 +23,7 @@ class Sprite
     void setLengths (float x, float y);
     void setTexture (sf::Texture texture);
     void setTexture (std::string fileName);
+    void setColour(uint8_t r, uint8_t g, uint8_t b);
     void displace (float dx, float dy);
     void stretch (float dlenx, float dleny);
     sf::Vector2f getCoordinates() const;

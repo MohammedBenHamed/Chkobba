@@ -50,6 +50,6 @@ class Game
     private:
     std::multiset<std::list<Sprite>::iterator,compFunc> itSet; // Contains iterators whose order will be used when drawing
     std::ofstream file;
-    unsigned long long int frameCount = 0;
+    unsigned long long int frameCount = 100;
 };
 #endif // GAME_H

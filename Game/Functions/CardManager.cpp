@@ -71,6 +71,37 @@ namespace cm
         }
         if (spriteIt != sBuffer->end()) spriteIt->addUpdate(Update(Update::CHANGETEX,filename,wait));
     }
+
+    void highlightCard(Card c, Deck d, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs)
+    {
+        std::list<Sprite>::iterator spriteIt = selectSprite(c,d,sBuffer,cardVecs);
+        uint8_t r = 255, g = 255, b = 255;
+        if (d == cm::HMNHAND)
+        {
+            g = 196;
+            b = 196;
+        }
+        else if (d == cm::TABLE)
+        {
+            r = 196;
+            g = 196;
+        }
+        if (spriteIt != sBuffer->end()  )
+        {
+            spriteIt->setColour(r,g,b);
+        }
+
+    }
+    void unhighlightCard(Card c, Deck d, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs)
+    {
+
+        std::list<Sprite>::iterator spriteIt = selectSprite(c,d,sBuffer,cardVecs);
+        if (spriteIt != sBuffer->end()  )
+        {
+            spriteIt->setColour(255,255,255);
+        }
+    }
+
     void moveCard(Card c, Deck d, float x, float y, float spd, unsigned int wait, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs)
     {
         std::list<Sprite>::iterator spriteIt = selectSprite(c,d,sBuffer,cardVecs);
@@ -105,7 +136,7 @@ namespace cm
                             sf::Vector2f coordinates = selectSprite(card,to,sBuffer,cardVecs)->getCoordinates();
                             cX = coordinates.x; cY = coordinates.y;
                             std::tie(x,y,spd) = getMoveParams(cardVecs->at(from).size()-1,j,from,cX,cY);
-                            moveCard(card,from,x,y,spd,0,sBuffer,cardVecs);
+                            moveCard(card,from,x,y,spd,wait,sBuffer,cardVecs);
                             j++;
                         }
                     }
@@ -156,6 +187,16 @@ namespace cm
         for (auto it = cardVecs->at(d).begin() ; it!= cardVecs->at(d).end(); ++it)
         {
             if (selectSprite(*it,d,sBuffer,cardVecs)->updatePending() == true) updating = true;
+        }
+        return updating;
+    }
+
+    bool anyDeckUpdating(std::list<Sprite>* sBuffer, cVecArr_t* cardVecs)
+    {
+        bool updating = false;
+        for (int i = DECK; i<=CPUPILE; i++)
+        {
+            if (deckUpdating(static_cast<Deck>(i),sBuffer,cardVecs)) updating = true;
         }
         return updating;
     }

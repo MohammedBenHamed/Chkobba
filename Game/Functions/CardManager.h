@@ -43,12 +43,15 @@ namespace cm
     void alterCardPriority(Card c, Deck d, int8_t priority, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     void flipCard(Card c, Deck d, unsigned int wait, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     void instantFlipCard(Card c, Deck d, unsigned int wait, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
+    void highlightCard(Card c, Deck d, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
+    void unhighlightCard(Card c, Deck d, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     void moveCard(Card c, Deck d, float x, float y, float spd, unsigned int wait, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     void moveCard(std::list<Sprite>::iterator spriteIt, float x, float y, float spd, unsigned int wait, std::list<Sprite>* sBuffer);
     void moveCardToHome(Card c, Deck from, Deck to, unsigned int wait, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     // Must check if card from "from" is not moving to move card to a certain home
     bool cardUpdating(Card c, Deck d, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     bool deckUpdating(Deck d, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
+    bool anyDeckUpdating(std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     bool spriteIsCard(std::list<Sprite>::iterator spriteIt, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     std::pair<Card,Deck> getCardFromSprite(std::list<Sprite>::iterator cIt, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
     void shuffleCards(std::mt19937* randGen, std::list<Sprite>* sBuffer, cVecArr_t* cardVecs);
